@@ -1,8 +1,8 @@
 <h2 mat-dialog-title>{{ data.title }}</h2>
-<div mat-dialog-content>
+<mat-dialog-content>
   <p>{{ data.message }}</p>
-</div>
-<div mat-dialog-actions align="end">
+</mat-dialog-content>
+<mat-dialog-actions align="end">
   <button mat-button (click)="onCancel()">{{ data.cancelText || '取消' }}</button>
   <button 
     mat-raised-button 
@@ -10,4 +10,4 @@
     (click)="onConfirm()">
     {{ data.confirmText || '确认' }}
   </button>
-</div> 
+</mat-dialog-actions> 

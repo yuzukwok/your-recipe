@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Recipe, Ingredient, Step } from '../../models';
 import { RecipeService, ImageService, CookingRecordService, AuthService, NotificationService } from '../../services';
 import { switchMap, finalize } from 'rxjs/operators';
 import { of, forkJoin } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-recipe-detail',
   templateUrl: './recipe-detail.component.html',
-  styleUrls: ['./recipe-detail.component.scss']
+  styleUrls: ['./recipe-detail.component.scss'],
+  standalone: true,
+  imports: [CommonModule, RouterModule]
 })
 export class RecipeDetailComponent implements OnInit {
   recipe: Recipe | null = null;
@@ -31,8 +32,7 @@ export class RecipeDetailComponent implements OnInit {
     private imageService: ImageService,
     private cookingRecordService: CookingRecordService,
     private authService: AuthService,
-    private notificationService: NotificationService,
-    private dialog: MatDialog
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit(): void {
@@ -253,8 +253,8 @@ export class RecipeDetailComponent implements OnInit {
       return;
     }
     
+    // 使用原生window.confirm
     const confirmed = window.confirm(`您确定要删除"${this.recipe.title}"吗？此操作不可撤销，所有相关的烹饪记录也将被删除。`);
-    
     if (confirmed) {
       this.deleteRecipe();
     }

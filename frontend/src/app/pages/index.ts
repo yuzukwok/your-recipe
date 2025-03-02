@@ -7,4 +7,5 @@ export * from './recipe-detail/recipe-detail.component';
 export * from './cooking-record-list/cooking-record-list.component';
 export * from './cooking-record-create/cooking-record-create.component';
 export * from './recipe-edit/recipe-edit.component';
-export * from './profile/profile.component'; 
+export * from './profile/profile.component';
+export * from './cooking-record-detail/cooking-record-detail.component'; 

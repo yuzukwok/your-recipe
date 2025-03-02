@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { tap, map } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { Recipe, RecipeCreate, RecipeUpdate } from '../models';
 
@@ -52,5 +52,12 @@ export class RecipeService {
     if (title) params.title = title;
     if (tags) params.tags = tags;
     return this.apiService.get<Recipe[]>(this.endpoint, params);
+  }
+  
+  // 获取所有标签（按使用频率排序）
+  getAllTags(): Observable<string[]> {
+    return this.apiService.get<{tag: string, count: number}[]>(`${this.endpoint}/tags`).pipe(
+      map(tagsWithCount => tagsWithCount.map(item => item.tag))
+    );
   }
 } 

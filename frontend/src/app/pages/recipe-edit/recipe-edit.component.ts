@@ -37,6 +37,10 @@ export class RecipeEditComponent implements OnInit {
   // 保存原始数据，用于比较变更
   originalRecipe: Recipe | null = null;
   recipeId: string | null = null;
+  
+  // 添加标签相关属性
+  availableTags: string[] = [];
+  isLoadingTags = false;
 
   constructor(
     private fb: FormBuilder,
@@ -58,6 +62,37 @@ export class RecipeEditComponent implements OnInit {
     }
 
     this.loadRecipe();
+    this.loadAvailableTags();
+  }
+  
+  // 加载所有可用标签
+  loadAvailableTags(): void {
+    this.isLoadingTags = true;
+    this.recipeService.getAllTags().subscribe({
+      next: (tags) => {
+        this.availableTags = tags;
+        this.isLoadingTags = false;
+      },
+      error: (err) => {
+        console.error('加载标签失败', err);
+        this.isLoadingTags = false;
+      }
+    });
+  }
+  
+  // 添加标签到输入框
+  addTagToInput(tag: string): void {
+    const tagsControl = this.recipeForm.get('tags');
+    if (tagsControl) {
+      const currentTags = tagsControl.value || '';
+      const tagsArray = currentTags ? currentTags.split(/[,\s]+/).filter((t: string) => t.trim()) : [];
+      
+      // 检查标签是否已存在
+      if (!tagsArray.includes(tag)) {
+        tagsArray.push(tag);
+        tagsControl.setValue(tagsArray.join(', '));
+      }
+    }
   }
 
   // 加载菜谱数据

@@ -1,8 +1,8 @@
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Dict
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, text
 
 from app import models, schemas
 from app.api import deps
@@ -91,6 +91,32 @@ def read_popular_recipes(
         # 发生错误时返回空列表
         print(f"获取热门菜谱时出错: {str(e)}")
         return []
+
+
+@router.get("/tags", response_model=List[Dict[str, Any]])
+def get_all_tags(
+    db: Session = Depends(deps.get_db),
+    limit: int = 50,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    获取所有标签及其使用频率，按使用频率降序排列
+    """
+    # 使用SQL函数unnest将数组展开为行
+    # 然后使用group by和count统计每个标签的使用频率
+    result = db.execute(text("""
+        SELECT unnest(tags) as tag, COUNT(*) as count
+        FROM recipes
+        WHERE tags IS NOT NULL
+        GROUP BY tag
+        ORDER BY count DESC, tag ASC
+        LIMIT :limit
+    """), {"limit": limit})
+    
+    # 将结果转换为字典列表
+    tags_with_count = [{"tag": row[0], "count": row[1]} for row in result]
+    
+    return tags_with_count
 
 
 @router.post("/", response_model=schemas.Recipe)

@@ -13,7 +13,7 @@ import { AppRoutingModule } from './app-routing.module';
 // 组件
 import { AppComponent } from './app.component';
 import { HeaderComponent, FooterComponent, RecipeCardComponent } from './components';
-import { HomeComponent, LoginComponent, RegisterComponent, RecipeCreateComponent, RecipeListComponent, RecipeDetailComponent, RecipeEditComponent, CookingRecordCreateComponent, CookingRecordListComponent } from './pages';
+import { HomeComponent, LoginComponent, RegisterComponent, RecipeCreateComponent, RecipeListComponent, RecipeEditComponent, CookingRecordCreateComponent } from './pages';
 import { ProfileComponent } from './pages/profile/profile.component';
 
 // 拦截器
@@ -34,10 +34,8 @@ import { SharedModule } from './shared/shared.module';
     RegisterComponent,
     RecipeCreateComponent,
     RecipeListComponent,
-    RecipeDetailComponent,
     RecipeEditComponent,
     CookingRecordCreateComponent,
-    CookingRecordListComponent,
     ProfileComponent
   ],
   imports: [

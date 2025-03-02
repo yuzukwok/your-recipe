@@ -5,14 +5,17 @@ import {
   HomeComponent,
   LoginComponent,
   RecipeCreateComponent,
-  RecipeDetailComponent,
   RecipeListComponent,
   RegisterComponent,
   CookingRecordCreateComponent,
-  CookingRecordListComponent,
-  RecipeEditComponent
+  RecipeEditComponent,
+  ProfileComponent,
 } from './pages';
-import { ProfileComponent } from './pages/profile/profile.component';
+
+// 导入独立组件
+import { RecipeDetailComponent } from './pages/recipe-detail/recipe-detail.component';
+import { CookingRecordListComponent } from './pages/cooking-record-list/cooking-record-list.component';
+import { CookingRecordDetailComponent } from './pages/cooking-record-detail/cooking-record-detail.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -33,6 +36,7 @@ const routes: Routes = [
     children: [
       { path: '', component: CookingRecordListComponent },
       { path: 'create', component: CookingRecordCreateComponent, canActivate: [AuthGuard] },
+      { path: ':id', component: CookingRecordDetailComponent },
     ] 
   },
   {

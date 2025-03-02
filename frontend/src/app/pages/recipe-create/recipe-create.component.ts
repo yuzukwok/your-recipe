@@ -29,6 +29,10 @@ export class RecipeCreateComponent implements OnInit {
   // AI食材识别相关
   isAnalyzingImage = false;
   aiImageFile: File | null = null;
+  
+  // 标签相关
+  availableTags: string[] = [];
+  isLoadingTags = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -40,10 +44,41 @@ export class RecipeCreateComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    this.loadAvailableTags();
     // 检查用户是否已登录
     // console.log('用户是否已登录:', this.authService.isLoggedIn());
     // console.log('当前用户:', this.authService.getCurrentUser());
     // console.log('当前Token:', this.authService.getToken());
+  }
+  
+  // 加载所有可用标签
+  loadAvailableTags(): void {
+    this.isLoadingTags = true;
+    this.recipeService.getAllTags().subscribe({
+      next: (tags) => {
+        this.availableTags = tags;
+        this.isLoadingTags = false;
+      },
+      error: (err) => {
+        console.error('加载标签失败', err);
+        this.isLoadingTags = false;
+      }
+    });
+  }
+  
+  // 添加标签到输入框
+  addTagToInput(tag: string): void {
+    const tagsControl = this.recipeForm.get('tags');
+    if (tagsControl) {
+      const currentTags = tagsControl.value || '';
+      const tagsArray = currentTags ? currentTags.split(/[,\s]+/).filter((t: string) => t.trim()) : [];
+      
+      // 检查标签是否已存在
+      if (!tagsArray.includes(tag)) {
+        tagsArray.push(tag);
+        tagsControl.setValue(tagsArray.join(', '));
+      }
+    }
   }
 
   private initForm(): void {

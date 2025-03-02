@@ -1,0 +1,65 @@
+<header class="bg-white shadow-md">
+  <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <div class="flex items-center">
+      <a routerLink="/" class="text-2xl font-bold text-primary-600">家庭菜谱</a>
+    </div>
+    
+    <div class="hidden md:flex space-x-6">
+      <a routerLink="/" routerLinkActive="text-primary-500 font-bold" [routerLinkActiveOptions]="{exact: true}" class="px-3 py-2 text-gray-700 hover:text-primary-500">首页</a>
+      <a routerLink="/recipes" routerLinkActive="text-primary-500 font-bold" [routerLinkActiveOptions]="{exact: true}" class="px-3 py-2 text-gray-700 hover:text-primary-500">菜谱</a>
+      <a routerLink="/recommendations" routerLinkActive="text-primary-500 font-bold" [routerLinkActiveOptions]="{exact: true}" class="px-3 py-2 text-gray-700 hover:text-primary-500">创意激发</a>
+      <ng-container *ngIf="(currentUser$ | async)">
+        <a routerLink="/my-recipes" routerLinkActive="text-primary-500 font-bold" [routerLinkActiveOptions]="{exact: true}" class="px-3 py-2 text-gray-700 hover:text-primary-500">我的菜谱</a>
+        <a routerLink="/cooking-records" routerLinkActive="text-primary-500 font-bold" [routerLinkActiveOptions]="{exact: true}" class="px-3 py-2 text-gray-700 hover:text-primary-500">烹饪记录</a>
+      </ng-container>
+    </div>
+    
+    <div class="hidden md:flex items-center space-x-4">
+      <ng-container *ngIf="(currentUser$ | async) as user; else loginButtons">
+        <div class="relative group">
+          <button class="flex items-center space-x-1 text-gray-700 hover:text-primary-500">
+            <span>{{ user.username }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden group-hover:block">
+            <a routerLink="/profile" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">个人资料</a>
+            <button (click)="logout()" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">退出登录</button>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #loginButtons>
+        <a routerLink="/login" class="text-gray-700 hover:text-primary-500 px-3 py-2">登录</a>
+        <a routerLink="/register" class="bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700">注册</a>
+      </ng-template>
+    </div>
+    
+    <!-- 移动端菜单按钮 -->
+    <button (click)="toggleMenu()" class="md:hidden text-gray-700">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path *ngIf="!isMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        <path *ngIf="isMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+  
+  <!-- 移动端菜单 -->
+  <div *ngIf="isMenuOpen" class="md:hidden bg-white border-t">
+    <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+      <a routerLink="/" routerLinkActive="text-primary-500 font-bold" [routerLinkActiveOptions]="{exact: true}" class="text-gray-700 hover:text-primary-500 py-2">首页</a>
+      <a routerLink="/recipes" routerLinkActive="text-primary-500 font-bold" class="text-gray-700 hover:text-primary-500 py-2">菜谱</a>
+      <a routerLink="/recommendations" routerLinkActive="text-primary-500 font-bold" class="text-gray-700 hover:text-primary-500 py-2">创意激发</a>
+      <ng-container *ngIf="(currentUser$ | async)">
+        <a routerLink="/my-recipes" routerLinkActive="text-primary-500 font-bold" class="text-gray-700 hover:text-primary-500 py-2">我的菜谱</a>
+        <a routerLink="/cooking-records" routerLinkActive="text-primary-500 font-bold" class="text-gray-700 hover:text-primary-500 py-2">烹饪记录</a>
+        <a routerLink="/profile" routerLinkActive="text-primary-500 font-bold" class="text-gray-700 hover:text-primary-500 py-2">个人资料</a>
+        <button (click)="logout()" class="text-left text-gray-700 hover:text-primary-500 py-2">退出登录</button>
+      </ng-container>
+      <ng-container *ngIf="!(currentUser$ | async)">
+        <a routerLink="/login" routerLinkActive="text-primary-500 font-bold" class="text-gray-700 hover:text-primary-500 py-2">登录</a>
+        <a routerLink="/register" routerLinkActive="text-primary-500 font-bold" class="text-gray-700 hover:text-primary-500 py-2">注册</a>
+      </ng-container>
+    </div>
+  </div>
+</header> 

@@ -1,0 +1,50 @@
+// 分页按钮动画效果
+button {
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// 标签按钮悬停效果
+.tag-btn {
+  transition: background-color 0.2s ease;
+}
+
+// 卡片悬停效果
+app-recipe-card {
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+// 分页指示器动画
+.pagination-indicator {
+  transition: all 0.3s ease;
+}
+
+// 自定义滚动条
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+} 

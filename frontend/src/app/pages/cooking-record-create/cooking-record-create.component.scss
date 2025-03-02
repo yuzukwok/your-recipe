@@ -1,0 +1,30 @@
+/* 评分星星悬停效果 */
+.cursor-pointer {
+  transition: transform 0.2s;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+/* 图片预览样式 */
+.relative {
+  overflow: hidden;
+  
+  img {
+    transition: transform 0.3s;
+  }
+  
+  &:hover img {
+    transform: scale(1.05);
+  }
+}
+
+/* 按钮动画 */
+button {
+  transition: all 0.2s;
+  
+  &:active:not(:disabled) {
+    transform: translateY(2px);
+  }
+} 

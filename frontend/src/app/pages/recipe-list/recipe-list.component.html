@@ -1,0 +1,127 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">浏览菜谱</h1>
+    
+    <!-- 搜索和筛选区域 -->
+    <div class="mb-8">
+      <div class="flex flex-col md:flex-row gap-4 mb-4">
+        <!-- 搜索框 -->
+        <div class="flex-grow">
+          <div class="relative">
+            <input
+              type="text"
+              [(ngModel)]="searchTerm"
+              (keyup.enter)="onSearch()"
+              placeholder="搜索菜谱..."
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              id="recipe-search-input"
+            >
+            <div class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
+              <!-- 语音搜索按钮 -->
+              <app-voice-search (searchTermChange)="onVoiceSearch($event)"></app-voice-search>
+              
+              <!-- 搜索按钮 -->
+              <button 
+                (click)="onSearch()" 
+                class="text-gray-500 hover:text-gray-700 p-1"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 清除筛选按钮 -->
+        <button 
+          *ngIf="searchTerm || selectedTags.length > 0"
+          (click)="clearFilters()" 
+          class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          清除筛选
+        </button>
+      </div>
+      
+      <!-- 标签筛选 -->
+      <div *ngIf="availableTags.length > 0" class="mt-4">
+        <h3 class="text-sm font-semibold text-gray-600 mb-2">按标签筛选:</h3>
+        <div class="flex flex-wrap gap-2">
+          <button 
+            *ngFor="let tag of availableTags"
+            (click)="onTagSelect(tag)"
+            class="px-3 py-1 rounded-full text-sm"
+            [ngClass]="selectedTags.includes(tag) ? 'bg-orange-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+          >
+            {{ tag }}
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 加载状态 -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600"></div>
+    </div>
+    
+    <!-- 错误信息 -->
+    <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+      {{ error }}
+    </div>
+    
+    <!-- 没有结果 -->
+    <div *ngIf="!isLoading && filteredRecipes.length === 0" class="text-center py-12">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <h3 class="text-xl font-semibold text-gray-700 mb-2">没有找到菜谱</h3>
+      <p class="text-gray-500">请尝试使用其他搜索条件或清除筛选器</p>
+    </div>
+    
+    <!-- 菜谱列表 -->
+    <div *ngIf="!isLoading && paginatedRecipes.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div *ngFor="let recipe of paginatedRecipes" class="transition-transform hover:scale-105 hover:z-10">
+        <app-recipe-card [recipe]="recipe"></app-recipe-card>
+      </div>
+    </div>
+    
+    <!-- 分页控件 -->
+    <div *ngIf="!isLoading && totalPages > 1" class="flex justify-center mt-8">
+      <nav class="flex items-center space-x-2">
+        <!-- 上一页 -->
+        <button 
+          (click)="changePage(currentPage - 1)" 
+          [disabled]="currentPage === 1"
+          class="px-3 py-1 rounded border border-gray-300"
+          [ngClass]="{'text-gray-400 cursor-not-allowed': currentPage === 1, 'hover:bg-gray-100': currentPage !== 1}"
+        >
+          上一页
+        </button>
+        
+        <!-- 页码按钮 -->
+        <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
+          <button 
+            (click)="changePage(i + 1)"
+            class="w-8 h-8 rounded-full"
+            [ngClass]="currentPage === i + 1 ? 'bg-green-600 text-white' : 'text-gray-700 hover:bg-gray-100'"
+          >
+            {{ i + 1 }}
+          </button>
+        </ng-container>
+        
+        <!-- 下一页 -->
+        <button 
+          (click)="changePage(currentPage + 1)" 
+          [disabled]="currentPage === totalPages"
+          class="px-3 py-1 rounded border border-gray-300"
+          [ngClass]="{'text-gray-400 cursor-not-allowed': currentPage === totalPages, 'hover:bg-gray-100': currentPage !== totalPages}"
+        >
+          下一页
+        </button>
+      </nav>
+    </div>
+  </div>
+</div> 

@@ -1,0 +1,132 @@
+<div class="space-y-8">
+  <!-- 季节切换器 -->
+  <div class="bg-white rounded-lg shadow-md p-5">
+    <div class="flex flex-col md:flex-row md:justify-between mb-6">
+      <div class="mb-4 md:mb-0">
+        <h3 class="text-xl font-bold text-gray-800 mb-2">季节性推荐</h3>
+        <p class="text-gray-600">根据当前季节和地理位置，推荐适合的应季食材和菜谱。</p>
+      </div>
+      
+      <div class="flex flex-col sm:flex-row gap-3">
+        <div>
+          <label class="block text-gray-700 text-sm font-medium mb-1">选择季节</label>
+          <div class="flex gap-2">
+            <button 
+              *ngFor="let season of seasons" 
+              (click)="changeSeason(season)"
+              class="px-3 py-1 rounded-md text-sm"
+              [ngClass]="currentSeason === season ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
+              {{ season }}
+            </button>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-gray-700 text-sm font-medium mb-1">选择地区</label>
+          <select 
+            [(ngModel)]="currentLocation"
+            (change)="changeLocation(currentLocation)"
+            class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+            <option *ngFor="let location of locations" [value]="location">{{ location }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 季节特色提示 -->
+    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-blue-700">
+            {{ currentSeason }}在{{ currentLocation }}的天气特点是炎热多雨，推荐选择清凉爽口的菜品，多食用具有清热解暑功效的食材。
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 时令食材 -->
+    <h4 class="text-lg font-bold text-gray-800 mb-3">当季食材推荐</h4>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-6">
+      <div *ngFor="let ingredient of seasonalIngredients" class="text-center">
+        <div class="bg-gray-100 rounded-full p-2 flex items-center justify-center mx-auto" style="width: 70px; height: 70px;">
+          <img [src]="ingredient.image" alt="{{ ingredient.name }}" class="w-10 h-10 object-contain">
+        </div>
+        <p class="mt-2 font-medium text-gray-800">{{ ingredient.name }}</p>
+        <div class="flex items-center justify-center mt-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+          </svg>
+          <span class="text-xs text-gray-500 ml-1">{{ ingredient.popularity }}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 本周热门趋势 -->
+  <div class="bg-white rounded-lg shadow-md p-5">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">{{ currentSeason }}本周热门</h3>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div *ngFor="let recipe of weeklyTrending" class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+        <div class="p-4">
+          <h4 class="text-lg font-bold text-gray-800 mb-2">{{ recipe.title }}</h4>
+          <p class="text-gray-600 text-sm mb-3">{{ recipe.description }}</p>
+          
+          <div class="flex items-center justify-between text-sm text-gray-500 mb-3">
+            <div class="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{{ recipe.cooking_time }} 分钟</span>
+            </div>
+            
+            <div class="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+              </svg>
+              <span>{{ recipe.likes_count }}</span>
+            </div>
+          </div>
+          
+          <div class="flex flex-wrap gap-2 mb-3">
+            <span *ngFor="let tag of recipe.tags" class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">{{ tag }}</span>
+          </div>
+          
+          <div class="flex justify-end">
+            <a [routerLink]="['/recipes', recipe.id]" class="text-green-600 hover:text-green-800 font-medium text-sm">
+              查看详情
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 节日推荐 -->
+  <div *ngIf="festivals.length > 0" class="bg-white rounded-lg shadow-md p-5">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">节日特色美食</h3>
+    
+    <div *ngFor="let festival of festivals" class="p-4 border border-yellow-200 rounded-lg bg-yellow-50">
+      <div class="flex items-center mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd" />
+        </svg>
+        <h4 class="text-lg font-bold text-gray-800">{{ festival.name }}</h4>
+        <span class="text-sm text-gray-500 ml-2">{{ festival.date }}</span>
+      </div>
+      
+      <p class="text-gray-600 mb-3">{{ festival.name }}即将到来，不妨尝试这些传统美食：</p>
+      
+      <div class="flex flex-wrap gap-2">
+        <a *ngFor="let recipe of festival.recipes" class="px-3 py-1 bg-white border border-yellow-300 rounded-full text-yellow-700 text-sm hover:bg-yellow-100 transition-colors">
+          {{ recipe }}
+        </a>
+      </div>
+    </div>
+  </div>
+</div> 

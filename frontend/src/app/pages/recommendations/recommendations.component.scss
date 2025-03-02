@@ -1,0 +1,97 @@
+.tab-button {
+  @apply px-4 py-2 text-gray-700 rounded-lg transition-colors duration-200;
+  
+  &.active {
+    @apply bg-orange-500 text-white font-medium;
+  }
+  
+  &:hover:not(.active) {
+    @apply bg-gray-100;
+  }
+}
+
+.tab-content {
+  min-height: 400px;
+}
+
+.module-card {
+  @apply bg-white rounded-lg shadow-md p-5 transition-all duration-300;
+  
+  &:hover {
+    @apply shadow-lg transform -translate-y-1;
+  }
+}
+
+// 导航按钮样式
+button {
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &.bg-orange-500 {
+    box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);
+    
+    &:hover {
+      box-shadow: 0 4px 6px rgba(249, 115, 22, 0.4);
+    }
+  }
+}
+
+// 页面标题动画
+h2 {
+  position: relative;
+  display: inline-block;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    width: 30%;
+    height: 3px;
+    background-color: #f97316;
+    bottom: -6px;
+    left: 0;
+    transition: width 0.3s ease;
+  }
+  
+  &:hover::after {
+    width: 100%;
+  }
+}
+
+// 内容切换动画
+[ngSwitch] > * {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 响应式调整
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  button {
+    font-size: 0.875rem;
+    
+    svg {
+      margin-right: 0.25rem;
+    }
+  }
+} 

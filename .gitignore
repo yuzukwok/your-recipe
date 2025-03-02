@@ -1,0 +1,180 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+
+# Angular
+node_modules/
+/dist
+/tmp
+/out-tsc
+/.angular/cache
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database
+*.sqlite3
+
+# MinIO
+minio-data/
+
+# Docker
+.docker/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Frontend specific
+/frontend/node_modules
+/frontend/.pnp
+/frontend/.pnp.js
+
+# Frontend build artifacts
+/frontend/dist
+/frontend/tmp
+/frontend/out-tsc
+/frontend/bazel-out
+
+# Frontend specific files
+/frontend/.angular/cache
+/frontend/.sass-cache/
+/frontend/connect.lock
+/frontend/coverage
+/frontend/libpeerconnection.log
+/frontend/testem.log
+/frontend/typings
+
+# Frontend environment variables
+/frontend/.env
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
+
+# Frontend logs
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+/frontend/pnpm-debug.log*
+
+# Backend specific
+# Python/FastAPI
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environment
+/backend/venv/
+/backend/env/
+/backend/.env
+/backend/.venv
+/backend/ENV/
+/backend/bin/
+/backend/build/
+/backend/develop-eggs/
+/backend/dist/
+/backend/downloads/
+/backend/eggs/
+/backend/lib/
+/backend/lib64/
+/backend/parts/
+/backend/sdist/
+/backend/var/
+/backend/*.egg-info/
+/backend/.installed.cfg
+/backend/*.egg
+
+# Test related
+/backend/.coverage
+/backend/htmlcov/
+/backend/.pytest_cache/
+/backend/.coverage.*
+/backend/coverage.xml
+/backend/*.cover
+
+# Backend logs
+/backend/*.log
+/backend/log/
+/backend/logs/
+
+# Backend cache
+/backend/.mypy_cache/
+/backend/.dmypy.json
+/backend/dmypy.json
+
+# Database related
+*.sqlite3
+*.db
+
+# MinIO data directory
+minio-data/
+
+# PostgreSQL data directory
+postgres-data/
+
+# Public ignore files
+# IDE configuration
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+.vs/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Backup files
+*.bak
+*.backup
+*~
+*.old

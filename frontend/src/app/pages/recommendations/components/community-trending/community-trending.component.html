@@ -1,0 +1,198 @@
+<div class="space-y-6">
+  <!-- 筛选器和控制区域 -->
+  <div class="bg-white rounded-lg shadow-md p-5">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
+      <div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">社区热门</h3>
+        <p class="text-gray-600">探索社区最受欢迎的菜谱和当前流行的烹饪趋势</p>
+      </div>
+      
+      <div class="flex items-center mt-3 sm:mt-0">
+        <div class="mr-4">
+          <button 
+            (click)="toggleViewMode()" 
+            class="p-2 rounded-md border border-gray-300 text-gray-500 hover:bg-gray-100 transition-colors">
+            <svg *ngIf="viewMode === 'grid'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2zM3 16a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" />
+            </svg>
+            <svg *ngIf="viewMode === 'list'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 时间和分类筛选 -->
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
+      <div class="flex mb-4 md:mb-0">
+        <div class="mr-6">
+          <label class="block text-gray-700 text-sm font-medium mb-2">时间范围</label>
+          <div class="flex space-x-2">
+            <button 
+              *ngFor="let range of timeRanges"
+              (click)="changeTimeRange(range)"
+              [ngClass]="selectedTimeRange === range ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+              class="px-3 py-1 rounded-md text-sm transition-colors">
+              {{ range }}
+            </button>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-gray-700 text-sm font-medium mb-2">分类</label>
+          <select 
+            [(ngModel)]="selectedCategory"
+            (change)="changeCategory(selectedCategory)"
+            class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-sm w-32">
+            <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 社区挑战 -->
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="relative h-40 bg-cover bg-center" [style.background-image]="'url(' + communityChallenge.image + ')'">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent">
+        <div class="absolute bottom-0 left-0 p-4">
+          <h3 class="text-white text-xl font-bold mb-1">{{ communityChallenge.title }}</h3>
+          <p class="text-white/90 text-sm mb-2">{{ communityChallenge.description }}</p>
+          <div class="flex items-center">
+            <span class="text-white/80 text-xs bg-white/20 px-2 py-1 rounded-full">
+              <span class="font-medium">{{ communityChallenge.participants }}</span> 人参与
+            </span>
+            <span class="text-white/80 text-xs bg-white/20 px-2 py-1 rounded-full ml-2">
+              还剩 <span class="font-medium">{{ communityChallenge.daysLeft }}</span> 天
+            </span>
+          </div>
+        </div>
+        <div class="absolute bottom-4 right-4">
+          <button 
+            (click)="joinChallenge()"
+            class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors text-sm">
+            参与挑战
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 网格视图 -->
+  <div *ngIf="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div *ngFor="let recipe of trendingRecipes" class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="h-48 overflow-hidden">
+        <img [src]="recipe.image" [alt]="recipe.title" class="w-full h-full object-cover">
+      </div>
+      <div class="p-4">
+        <h4 class="text-lg font-bold text-gray-800 mb-2">{{ recipe.title }}</h4>
+        
+        <div class="flex items-center mb-3">
+          <img [src]="recipe.authorAvatar" [alt]="recipe.author" class="w-6 h-6 rounded-full mr-2">
+          <span class="text-sm text-gray-700">{{ recipe.author }}</span>
+          <span class="text-xs text-gray-500 ml-auto">{{ recipe.timePosted }}</span>
+        </div>
+        
+        <div class="flex flex-wrap gap-2 mb-3">
+          <span *ngFor="let tag of recipe.tags" class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">{{ tag }}</span>
+        </div>
+        
+        <div class="flex justify-between text-sm text-gray-500">
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+            </svg>
+            <span>{{ formatNumber(recipe.likes) }}</span>
+          </div>
+          
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd" />
+            </svg>
+            <span>{{ formatNumber(recipe.comments) }}</span>
+          </div>
+          
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+            </svg>
+            <span>{{ formatNumber(recipe.saves) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 列表视图 -->
+  <div *ngIf="viewMode === 'list'" class="space-y-4">
+    <div *ngFor="let recipe of trendingRecipes" class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="flex flex-col sm:flex-row">
+        <div class="sm:w-1/4">
+          <div class="h-48 sm:h-full">
+            <img [src]="recipe.image" [alt]="recipe.title" class="w-full h-full object-cover">
+          </div>
+        </div>
+        <div class="p-4 sm:w-3/4">
+          <div class="flex justify-between mb-2">
+            <h4 class="text-lg font-bold text-gray-800">{{ recipe.title }}</h4>
+            <span class="text-xs text-gray-500">{{ recipe.timePosted }}</span>
+          </div>
+          
+          <div class="flex items-center mb-3">
+            <img [src]="recipe.authorAvatar" [alt]="recipe.author" class="w-6 h-6 rounded-full mr-2">
+            <span class="text-sm text-gray-700">{{ recipe.author }}</span>
+          </div>
+          
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span *ngFor="let tag of recipe.tags" class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">{{ tag }}</span>
+          </div>
+          
+          <div class="flex justify-between items-center">
+            <div class="flex space-x-4 text-sm text-gray-500">
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                </svg>
+                <span>{{ formatNumber(recipe.likes) }}</span>
+              </div>
+              
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd" />
+                </svg>
+                <span>{{ formatNumber(recipe.comments) }}</span>
+              </div>
+              
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                </svg>
+                <span>{{ formatNumber(recipe.saves) }}</span>
+              </div>
+            </div>
+            
+            <a href="#" class="text-green-600 hover:text-green-800 font-medium">查看详情</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 热门标签区域 -->
+  <div class="bg-white rounded-lg shadow-md p-5">
+    <h3 class="text-lg font-bold text-gray-800 mb-4">热门标签</h3>
+    
+    <div class="flex flex-wrap gap-3">
+      <div *ngFor="let tag of trendingTags" 
+        class="flex items-center px-3 py-2 rounded-full transition-all"
+        [ngClass]="tag.trending ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+        {{ tag.name }}
+        <span class="text-xs ml-2 bg-white px-1.5 py-0.5 rounded-full">{{ formatNumber(tag.count) }}</span>
+        <svg *ngIf="tag.trending" xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 ml-1 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clip-rule="evenodd" />
+        </svg>
+      </div>
+    </div>
+  </div>
+</div> 

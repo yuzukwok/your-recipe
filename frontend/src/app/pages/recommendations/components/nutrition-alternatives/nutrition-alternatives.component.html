@@ -1,0 +1,177 @@
+<div class="bg-white rounded-lg shadow-md p-5">
+  <h3 class="text-xl font-bold text-gray-800 mb-2">营养替代方案</h3>
+  <p class="text-gray-600 mb-6">寻找符合您健康目标的食材替代选项，优化菜谱营养平衡</p>
+  
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- 左侧：食材选择和搜索 -->
+    <div class="lg:col-span-1">
+      <div class="bg-gray-50 rounded-lg p-4 mb-4">
+        <h4 class="text-lg font-bold text-gray-800 mb-3">选择原始食材</h4>
+        
+        <div class="flex flex-wrap gap-2 mb-4">
+          <button 
+            *ngFor="let ingredient of ingredients"
+            (click)="selectIngredient(ingredient)"
+            class="px-3 py-1 text-sm rounded-md"
+            [ngClass]="selectedIngredient === ingredient ? 'bg-green-500 text-white' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'">
+            {{ ingredient }}
+          </button>
+        </div>
+        
+        <div class="relative mt-4">
+          <input 
+            type="text" 
+            placeholder="搜索其他食材..." 
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+          <svg class="h-5 w-5 text-gray-400 absolute right-3 top-2.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+          </svg>
+        </div>
+      </div>
+      
+      <div class="bg-gray-50 rounded-lg p-4">
+        <h4 class="text-lg font-bold text-gray-800 mb-3">替代目的</h4>
+        
+        <div class="space-y-2">
+          <div *ngFor="let type of searchTypes" class="flex items-center">
+            <input 
+              type="radio" 
+              [id]="type.value" 
+              [value]="type.value" 
+              [(ngModel)]="selectedSearchType"
+              (change)="updateSearchType(type.value)"
+              class="h-4 w-4 text-green-600 focus:ring-green-500">
+            <label [for]="type.value" class="ml-2 text-sm text-gray-700">{{ type.label }}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 中间：替代品列表 -->
+    <div class="lg:col-span-1">
+      <div *ngIf="alternatives[selectedIngredient] && alternatives[selectedIngredient].length > 0" class="space-y-3">
+        <h4 class="text-lg font-bold text-gray-800 mb-3">可用替代品</h4>
+        
+        <div 
+          *ngFor="let alternative of alternatives[selectedIngredient]" 
+          (click)="selectAlternative(alternative)"
+          class="border rounded-lg p-3 cursor-pointer transition-all"
+          [ngClass]="selectedAlternative === alternative ? 'border-green-500 bg-green-50' : 'border-gray-200 bg-white hover:border-green-200 hover:bg-green-50'">
+          
+          <div class="flex justify-between">
+            <span class="font-medium text-gray-800">{{ alternative.name }}</span>
+            <span class="text-sm text-gray-500">{{ alternative.category }}</span>
+          </div>
+          
+          <div class="mt-2 flex items-center">
+            <div class="flex items-center">
+              <span class="text-xs">用户评分:</span>
+              <span class="ml-1 text-sm font-medium text-gray-700">{{ alternative.userRating }}%</span>
+            </div>
+            
+            <div class="flex items-center ml-4">
+              <svg *ngIf="alternative.nutritionDiff.protein > 0" class="h-4 w-4 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+              </svg>
+              <svg *ngIf="alternative.nutritionDiff.protein < 0" class="h-4 w-4 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+              <span class="text-xs ml-1">蛋白质</span>
+            </div>
+            
+            <div class="flex items-center ml-2">
+              <svg *ngIf="alternative.nutritionDiff.fat < 0" class="h-4 w-4 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+              </svg>
+              <svg *ngIf="alternative.nutritionDiff.fat > 0" class="h-4 w-4 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+              <span class="text-xs ml-1">脂肪</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="!alternatives[selectedIngredient] || alternatives[selectedIngredient].length === 0" class="bg-gray-50 rounded-lg p-4 text-center">
+        <p class="text-gray-500">暂无替代食材推荐</p>
+        <button class="mt-3 text-green-600 font-medium text-sm">请求推荐</button>
+      </div>
+    </div>
+    
+    <!-- 右侧：详细信息 -->
+    <div class="lg:col-span-1">
+      <div *ngIf="selectedAlternative" class="bg-gray-50 rounded-lg p-4">
+        <h4 class="text-lg font-bold text-gray-800 mb-3">{{ selectedAlternative.name }} 详情</h4>
+        
+        <div class="mb-4">
+          <h5 class="text-sm font-medium text-gray-700 mb-2">营养对比 (相比{{ selectedIngredient }})</h5>
+          
+          <div class="space-y-2">
+            <div>
+              <div class="flex justify-between mb-1">
+                <span class="text-xs text-gray-700">蛋白质</span>
+                <span class="text-xs font-medium" [ngClass]="selectedAlternative.nutritionDiff.protein >= 0 ? 'text-green-600' : 'text-red-600'">
+                  {{ selectedAlternative.nutritionDiff.protein > 0 ? '+' : '' }}{{ selectedAlternative.nutritionDiff.protein }}%
+                </span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-1.5">
+                <div *ngIf="selectedAlternative.nutritionDiff.protein >= 0" class="bg-green-500 h-1.5 rounded-full" [style.width.%]="selectedAlternative.nutritionDiff.protein > 0 ? selectedAlternative.nutritionDiff.protein * 2 : 1"></div>
+                <div *ngIf="selectedAlternative.nutritionDiff.protein < 0" class="bg-red-500 h-1.5 rounded-full" [style.width.%]="Math.abs(selectedAlternative.nutritionDiff.protein) * 2"></div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex justify-between mb-1">
+                <span class="text-xs text-gray-700">脂肪</span>
+                <span class="text-xs font-medium" [ngClass]="selectedAlternative.nutritionDiff.fat <= 0 ? 'text-green-600' : 'text-red-600'">
+                  {{ selectedAlternative.nutritionDiff.fat > 0 ? '+' : '' }}{{ selectedAlternative.nutritionDiff.fat }}%
+                </span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-1.5">
+                <div *ngIf="selectedAlternative.nutritionDiff.fat <= 0" class="bg-green-500 h-1.5 rounded-full" [style.width.%]="Math.abs(selectedAlternative.nutritionDiff.fat) * 2"></div>
+                <div *ngIf="selectedAlternative.nutritionDiff.fat > 0" class="bg-red-500 h-1.5 rounded-full" [style.width.%]="selectedAlternative.nutritionDiff.fat * 2"></div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex justify-between mb-1">
+                <span class="text-xs text-gray-700">钙</span>
+                <span class="text-xs font-medium" [ngClass]="selectedAlternative.nutritionDiff.calcium >= 0 ? 'text-green-600' : 'text-red-600'">
+                  {{ selectedAlternative.nutritionDiff.calcium > 0 ? '+' : '' }}{{ selectedAlternative.nutritionDiff.calcium }}%
+                </span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-1.5">
+                <div *ngIf="selectedAlternative.nutritionDiff.calcium >= 0" class="bg-green-500 h-1.5 rounded-full" [style.width.%]="selectedAlternative.nutritionDiff.calcium > 0 ? selectedAlternative.nutritionDiff.calcium * 2 : 1"></div>
+                <div *ngIf="selectedAlternative.nutritionDiff.calcium < 0" class="bg-red-500 h-1.5 rounded-full" [style.width.%]="Math.abs(selectedAlternative.nutritionDiff.calcium) * 2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <h5 class="text-sm font-medium text-gray-700 mb-2">主要好处</h5>
+          <div class="flex flex-wrap gap-2">
+            <span *ngFor="let benefit of selectedAlternative.benefits" class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+              {{ benefit }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <h5 class="text-sm font-medium text-gray-700 mb-2">烹饪建议</h5>
+          <p class="text-sm text-gray-600">{{ selectedAlternative.tips }}</p>
+        </div>
+        
+        <div class="mt-4">
+          <button class="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition-colors">
+            查看使用此替代品的食谱
+          </button>
+        </div>
+      </div>
+      
+      <div *ngIf="!selectedAlternative" class="bg-gray-50 rounded-lg p-4 h-full flex items-center justify-center">
+        <p class="text-gray-500">请选择一个替代食材查看详情</p>
+      </div>
+    </div>
+  </div>
+</div> 

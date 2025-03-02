@@ -1,0 +1,78 @@
+// 自定义单选按钮样式
+input[type="radio"] {
+  &:checked {
+    background-color: #10b981;
+    border-color: #10b981;
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  }
+}
+
+// 替代品卡片过渡效果
+.transition-all {
+  transition: all 0.2s ease-in-out;
+}
+
+// 进度条动画
+.h-1\.5 {
+  div {
+    transition: width 0.5s ease-out;
+  }
+}
+
+// 替代品标签悬停效果
+.bg-green-100 {
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: #a7f3d0;
+  }
+}
+
+// 按钮点击效果
+button {
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// 搜索框聚焦效果
+input[type="text"] {
+  transition: border-color 0.2s, box-shadow 0.2s;
+  
+  &:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  }
+}
+
+// 自定义滚动条
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 10px;
+  
+  &:hover {
+    background: #9ca3af;
+  }
+}
+
+// 响应式调整
+@media (max-width: 1023px) {
+  .space-y-3 {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 5px;
+  }
+} 

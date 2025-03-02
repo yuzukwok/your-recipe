@@ -1,0 +1,262 @@
+<div class="container mx-auto px-4 py-8">
+  <!-- 加载状态 -->
+  <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600"></div>
+  </div>
+  
+  <!-- 错误信息 -->
+  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+    {{ error }}
+    <button (click)="goBack()" class="ml-4 text-red-700 underline">返回菜谱列表</button>
+  </div>
+  
+  <!-- 菜谱详情 -->
+  <div *ngIf="!isLoading && recipe" class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <!-- 返回按钮 -->
+    <div class="p-4 bg-gray-50 border-b">
+      <button (click)="goBack()" class="flex items-center text-gray-600 hover:text-gray-800">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        返回菜谱列表
+      </button>
+    </div>
+    
+    <!-- 菜谱头部信息 -->
+    <div class="p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h1 class="text-3xl font-bold text-gray-800">{{ recipe.title }}</h1>
+        
+        <!-- 操作按钮组 -->
+        <div class="flex space-x-2">
+          <!-- 编辑按钮 - 仅对菜谱作者显示 -->
+          <button 
+            *ngIf="isOwner" 
+            (click)="editRecipe()" 
+            class="bg-blue-500 text-white p-2 rounded-full flex items-center justify-center"
+            title="编辑菜谱"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </button>
+          
+          <!-- 删除按钮 - 仅对菜谱作者显示 -->
+          <button 
+            *ngIf="isOwner" 
+            (click)="confirmDeleteRecipe()" 
+            class="bg-red-500 text-white p-2 rounded-full flex items-center justify-center"
+            title="删除菜谱"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <!-- 作者和创建日期 -->
+      <div class="flex items-center text-sm text-gray-500 mb-4">
+        <div *ngIf="recipe.user_username" class="flex items-center mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          <span>{{ recipe.user_username }}</span>
+        </div>
+        
+        <div *ngIf="recipe.created_at" class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span>{{ getFormattedDate(recipe.created_at) }}</span>
+        </div>
+      </div>
+      
+      <!-- 菜谱标题和主图 -->
+      <div class="relative">
+        <!-- 主图片 -->
+        <div class="h-64 md:h-96 bg-gray-200 relative">
+          <!-- 加载状态 -->
+          <div *ngIf="imageLoading" class="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-70 z-10">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+          </div>
+          
+          <!-- 主图片 -->
+          <img *ngIf="recipe?.main_image_url && !imageError" 
+              [src]="recipe.main_image_url" 
+              (error)="onImageError()"
+              [alt]="recipe?.title" 
+              class="w-full h-full object-cover">
+              
+          <!-- 图片加载错误或没有图片时显示占位图 -->
+          <div *ngIf="!recipe?.main_image_url || imageError" 
+              class="w-full h-full flex items-center justify-center bg-gray-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 菜谱标签 -->
+      <div *ngIf="recipe.tags && recipe.tags.length > 0" class="flex flex-wrap gap-2 mb-6">
+        <span *ngFor="let tag of recipe.tags" 
+              class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">{{ tag }}</span>
+      </div>
+      
+      <!-- 菜谱描述 -->
+      <p *ngIf="recipe.description" class="text-gray-600 mb-6 text-lg">{{ recipe.description }}</p>
+      
+      <!-- 菜谱基本信息 -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="flex items-center text-gray-700 mb-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span class="font-medium">难度</span>
+          </div>
+          <p class="text-gray-800 font-semibold text-lg">{{ getDifficultyText(recipe.difficulty) }}</p>
+        </div>
+        
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="flex items-center text-gray-700 mb-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="font-medium">烹饪时间</span>
+          </div>
+          <p class="text-gray-800 font-semibold text-lg">{{ getFormattedTime(recipe.cooking_time) }}</p>
+        </div>
+        
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="flex items-center text-gray-700 mb-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span class="font-medium">份量</span>
+          </div>
+          <p class="text-gray-800 font-semibold text-lg">{{ recipe.servings || '未指定' }} 人份</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 记录烹饪按钮 -->
+    <div class="p-6 pt-0 flex justify-center">
+      <button 
+        (click)="createCookingRecord()" 
+        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg flex items-center shadow-md transition-colors duration-300"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+        记录烹饪
+      </button>
+    </div>
+    
+    <div class="border-t border-gray-200"></div>
+    
+    <!-- 食材列表 -->
+    <div class="p-6">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">食材</h2>
+      
+      <div *ngIf="!recipe.ingredients || recipe.ingredients.length === 0" class="text-gray-500 italic">
+        未提供食材信息
+      </div>
+      
+      <div *ngIf="recipe.ingredients && recipe.ingredients.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div *ngFor="let ingredient of recipe.ingredients" class="flex items-center p-3 bg-gray-50 rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span class="font-medium">{{ ingredient.name }}</span>
+          <span class="ml-auto text-gray-600">{{ ingredient.amount }} {{ ingredient.unit || '' }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="border-t border-gray-200"></div>
+    
+    <!-- 烹饪步骤 -->
+    <div class="p-6">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">烹饪步骤</h2>
+      
+      <div *ngIf="!recipe.steps || recipe.steps.length === 0" class="text-gray-500 italic">
+        未提供烹饪步骤
+      </div>
+      
+      <div *ngIf="recipe.steps && recipe.steps.length > 0" class="mb-8">
+        <!-- 步骤导航 -->
+        <!-- <div class="flex justify-between items-center mb-6">
+          <button 
+            (click)="prevStep()" 
+            [disabled]="activeStepIndex === 0"
+            class="px-4 py-2 rounded-lg"
+            [ngClass]="activeStepIndex === 0 ? 'text-gray-400 cursor-not-allowed' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          
+          <div class="text-center">
+            <span class="text-sm font-medium text-gray-600">步骤 {{ activeStepIndex + 1 }}/{{ recipe.steps.length }}</span>
+            <div class="flex space-x-1 mt-2">
+              <div *ngFor="let step of recipe.steps; let i = index" 
+                   (click)="setActiveStep(i)"
+                   class="w-2 h-2 rounded-full cursor-pointer"
+                   [ngClass]="i === activeStepIndex ? 'bg-green-600' : 'bg-gray-300 hover:bg-gray-400'">
+              </div>
+            </div>
+          </div>
+          
+          <button 
+            (click)="nextStep()" 
+            [disabled]="activeStepIndex === recipe.steps.length - 1"
+            class="px-4 py-2 rounded-lg"
+            [ngClass]="activeStepIndex === recipe.steps.length - 1 ? 'text-gray-400 cursor-not-allowed' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div> -->
+        
+        <!-- 当前步骤 -->
+        <!-- <div *ngIf="recipe.steps[activeStepIndex]" class="bg-gray-50 rounded-lg p-6 mb-8">
+          <div *ngIf="recipe.steps[activeStepIndex].image" class="mb-4">
+            <img [src]="recipe.steps[activeStepIndex].image" alt="步骤图片" class="w-full max-h-96 object-cover rounded-lg">
+          </div>
+          
+          <p class="text-lg">{{ recipe.steps[activeStepIndex].description }}</p>
+        </div> -->
+        
+        <!-- 所有步骤列表 -->
+        <div class="border-t border-gray-200 pt-6">
+          <h3 class="text-xl font-semibold text-gray-700 mb-4">所有步骤</h3>
+          <div class="space-y-6">
+            <div *ngFor="let step of recipe.steps; let i = index" class="bg-gray-50 rounded-lg p-6">
+              <div class="flex items-start">
+                <div class="flex-shrink-0 bg-green-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-4">
+                  {{ i + 1 }}
+                </div>
+                <div class="flex-grow">
+                  <div *ngIf="step.image" class="mb-4">
+                    <img [src]="step.image" alt="步骤 {{ i + 1 }} 图片" class="w-full max-h-80 object-cover rounded-lg">
+                  </div>
+                  <p class="text-lg">{{ step.description }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

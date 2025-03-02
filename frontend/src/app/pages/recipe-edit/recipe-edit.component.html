@@ -1,0 +1,394 @@
+<div class="container mx-auto px-4 py-6">
+  <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <!-- 页面标题和返回按钮 -->
+    <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
+      <div class="flex items-center">
+        <button (click)="goBack()" class="text-gray-600 hover:text-gray-800 mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </button>
+        <h1 class="text-2xl font-bold text-gray-800">编辑菜谱</h1>
+      </div>
+    </div>
+    
+    <!-- 加载状态 -->
+    <div *ngIf="isLoading" class="p-6 flex justify-center items-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600"></div>
+    </div>
+    
+    <!-- 错误信息 -->
+    <div *ngIf="error" class="p-6">
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        {{ error }}
+      </div>
+      <div class="mt-4 flex justify-center">
+        <button (click)="goToList()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+          返回菜谱列表
+        </button>
+      </div>
+    </div>
+    
+    <!-- 表单内容 -->
+    <div *ngIf="!isLoading && !error">
+      <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()" class="p-6">
+        <!-- 基本信息 -->
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-800 mb-4">基本信息</h2>
+          
+          <div class="mb-4">
+            <label for="title" class="block text-gray-700 font-medium mb-2">菜谱名称 <span class="text-red-500">*</span></label>
+            <input 
+              type="text" 
+              id="title" 
+              formControlName="title"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="输入菜谱名称"
+            >
+            <div *ngIf="recipeForm.get('title')?.invalid && recipeForm.get('title')?.touched" class="text-red-500 mt-1">
+              菜谱名称不能为空
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <label for="description" class="block text-gray-700 font-medium mb-2">菜谱描述 <span class="text-red-500">*</span></label>
+            <textarea 
+              id="description" 
+              formControlName="description"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="简单描述一下这道菜"
+              rows="3"
+            ></textarea>
+            <div *ngIf="recipeForm.get('description')?.invalid && recipeForm.get('description')?.touched" class="text-red-500 mt-1">
+              菜谱描述不能为空
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label for="difficulty" class="block text-gray-700 font-medium mb-2">难度 <span class="text-red-500">*</span></label>
+              <select 
+                id="difficulty" 
+                formControlName="difficulty"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option [value]="1">简单</option>
+                <option [value]="2">中等</option>
+                <option [value]="3">困难</option>
+              </select>
+            </div>
+            
+            <div>
+              <label for="cooking_time" class="block text-gray-700 font-medium mb-2">烹饪时间(分钟) <span class="text-red-500">*</span></label>
+              <input 
+                type="number" 
+                id="cooking_time" 
+                formControlName="cooking_time"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                min="1"
+              >
+            </div>
+            
+            <div>
+              <label for="servings" class="block text-gray-700 font-medium mb-2">份量(人份) <span class="text-red-500">*</span></label>
+              <input 
+                type="number" 
+                id="servings" 
+                formControlName="servings"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                min="1"
+              >
+            </div>
+          </div>
+        </div>
+        
+        <!-- 主图片 -->
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-800 mb-4">主图片</h2>
+          
+          <div class="mb-4">
+            <div class="flex items-center gap-4">
+              <div class="relative w-32 h-32 bg-gray-100 border border-gray-300 rounded-md overflow-hidden flex items-center justify-center">
+                <img 
+                  *ngIf="mainImagePreview" 
+                  [src]="mainImagePreview" 
+                  alt="主图片预览" 
+                  class="w-full h-full object-cover"
+                >
+                <svg *ngIf="!mainImagePreview" xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                
+                <!-- 上传中状态 -->
+                <div *ngIf="isUploadingImage" class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                  <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white"></div>
+                </div>
+              </div>
+              
+              <div>
+                <input 
+                  type="file" 
+                  id="main-image-input" 
+                  accept="image/*" 
+                  class="hidden" 
+                  (change)="onMainImageSelected($event)"
+                >
+                <button 
+                  type="button"
+                  class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 mr-2"
+                  (click)="triggerMainImageInput()"
+                >
+                  {{ mainImagePreview ? '更换图片' : '上传图片' }}
+                </button>
+                
+                <button 
+                  *ngIf="mainImagePreview"
+                  type="button"
+                  class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                  (click)="removeMainImage()"
+                >
+                  删除图片
+                </button>
+              </div>
+            </div>
+            
+            <div *ngIf="imageUploadError" class="text-red-500 mt-2">
+              {{ imageUploadError }}
+            </div>
+          </div>
+        </div>
+        
+        <!-- 食材 -->
+        <div class="mb-8">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-800">食材</h2>
+            
+            <!-- AI识别食材按钮 -->
+            <div class="relative">
+              <input 
+                type="file" 
+                id="ai-image-input" 
+                accept="image/*" 
+                class="hidden" 
+                (change)="onAiImageSelected($event)"
+              >
+              <button 
+                type="button"
+                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+                (click)="openAiImageSelector()"
+                [disabled]="isAnalyzingImage"
+              >
+                <svg *ngIf="isAnalyzingImage" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>AI识别食材</span>
+              </button>
+            </div>
+          </div>
+          
+          <div formArrayName="ingredients">
+            <div
+              *ngFor="let ingredient of ingredientsArray.controls; let i = index"
+              [formGroupName]="i"
+              class="flex items-start mb-3"
+            >
+              <div class="flex-grow grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <input 
+                    type="text" 
+                    formControlName="name"
+                    placeholder="食材名称"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                  <div *ngIf="ingredientsArray.at(i).get('name')?.invalid && ingredientsArray.at(i).get('name')?.touched" class="text-red-500 mt-1 text-sm">
+                    食材名称不能为空
+                  </div>
+                </div>
+                
+                <div>
+                  <input 
+                    type="text" 
+                    formControlName="amount"
+                    placeholder="食材用量"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                  <div *ngIf="ingredientsArray.at(i).get('amount')?.invalid && ingredientsArray.at(i).get('amount')?.touched" class="text-red-500 mt-1 text-sm">
+                    食材用量不能为空
+                  </div>
+                </div>
+                
+                <div>
+                  <input 
+                    type="text" 
+                    formControlName="unit"
+                    placeholder="单位（可选）"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                </div>
+              </div>
+              
+              <button 
+                type="button"
+                class="ml-2 flex-shrink-0 p-2 text-red-500 hover:bg-red-100 rounded-full"
+                (click)="removeIngredient(i)"
+                [disabled]="ingredientsArray.length <= 1"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <button 
+            type="button"
+            class="mt-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center"
+            (click)="addIngredient()"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            添加食材
+          </button>
+        </div>
+        
+        <!-- 步骤 -->
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-800 mb-4">烹饪步骤</h2>
+          
+          <div formArrayName="steps">
+            <div
+              *ngFor="let step of stepsArray.controls; let i = index"
+              [formGroupName]="i"
+              class="mb-6 p-4 bg-gray-50 rounded-lg"
+            >
+              <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-medium">步骤 {{ i + 1 }}</h3>
+                
+                <button 
+                  type="button"
+                  class="text-red-500 hover:bg-red-100 p-2 rounded-full"
+                  (click)="removeStep(i)"
+                  [disabled]="stepsArray.length <= 1"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div class="mb-3">
+                <textarea 
+                  formControlName="description"
+                  placeholder="描述这一步骤的操作"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  rows="2"
+                ></textarea>
+                <div *ngIf="stepsArray.at(i).get('description')?.invalid && stepsArray.at(i).get('description')?.touched" class="text-red-500 mt-1">
+                  步骤描述不能为空
+                </div>
+              </div>
+              
+              <!-- 步骤图片 -->
+              <div class="flex items-center gap-4">
+                <div class="relative w-24 h-24 bg-gray-100 border border-gray-300 rounded-md overflow-hidden flex items-center justify-center">
+                  <img 
+                    *ngIf="stepImagePreviews[i]" 
+                    [src]="stepImagePreviews[i]" 
+                    alt="步骤图片预览" 
+                    class="w-full h-full object-cover"
+                  >
+                  <svg *ngIf="!stepImagePreviews[i]" xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  
+                  <!-- 上传中状态 -->
+                  <div *ngIf="isUploadingImage" class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <div class="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                  </div>
+                </div>
+                
+                <div>
+                  <input 
+                    type="file" 
+                    [id]="'step-image-input-' + i" 
+                    accept="image/*" 
+                    class="hidden" 
+                    (change)="onStepImageSelected($event, i)"
+                  >
+                  <button 
+                    type="button"
+                    class="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm mr-2"
+                    (click)="triggerStepImageInput(i)"
+                  >
+                    {{ stepImagePreviews[i] ? '更换图片' : '上传图片' }}
+                  </button>
+                  
+                  <button 
+                    *ngIf="stepImagePreviews[i]"
+                    type="button"
+                    class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
+                    (click)="removeStepImage(i)"
+                  >
+                    删除图片
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <button 
+            type="button"
+            class="mt-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center"
+            (click)="addStep()"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            添加步骤
+          </button>
+        </div>
+        
+        <!-- 标签 -->
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-800 mb-4">标签</h2>
+          
+          <div class="mb-4">
+            <input 
+              type="text" 
+              id="tags" 
+              formControlName="tags"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="用逗号或空格分隔多个标签，例如：家常菜 快手菜 减脂"
+            >
+            <p class="text-gray-500 mt-1 text-sm">用逗号或空格分隔多个标签</p>
+          </div>
+        </div>
+        
+        <!-- 提交按钮 -->
+        <div class="flex justify-end space-x-4">
+          <button 
+            type="button"
+            class="px-6 py-3 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+            (click)="goBack()"
+          >
+            取消
+          </button>
+          
+          <button 
+            type="submit"
+            class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center"
+            [disabled]="recipeForm.invalid || isSubmitting"
+          >
+            <svg *ngIf="isSubmitting" class="animate-spin -ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            保存菜谱
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div> 

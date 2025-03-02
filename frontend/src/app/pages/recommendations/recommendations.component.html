@@ -1,0 +1,32 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">创意激发</h2>
+    <p class="text-gray-600">探索个性化推荐、季节性食材和创意食谱融合，激发您的烹饪灵感</p>
+  </div>
+  
+  <!-- 子模块导航 -->
+  <div class="bg-white rounded-lg shadow-md mb-6 p-4">
+    <div class="flex flex-wrap gap-2">
+      <button 
+        *ngFor="let module of modules"
+        (click)="setActiveModule(module.id)"
+        class="flex items-center px-4 py-2 rounded-md transition-colors"
+        [ngClass]="activeModule === module.id ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'">
+        <svg class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" [attr.d]="getIconPath(module.icon)" clip-rule="evenodd" />
+        </svg>
+        <span>{{ module.name }}</span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- 子模块内容 -->
+  <div [ngSwitch]="activeModule">
+    <app-personalized *ngSwitchCase="'personalized'"></app-personalized>
+    <app-seasonal *ngSwitchCase="'seasonal'"></app-seasonal>
+    <app-diet-analysis *ngSwitchCase="'diet-analysis'"></app-diet-analysis>
+    <app-nutrition-alternatives *ngSwitchCase="'nutrition-alternatives'"></app-nutrition-alternatives>
+    <app-recipe-fusion *ngSwitchCase="'recipe-fusion'"></app-recipe-fusion>
+    <app-community-trending *ngSwitchCase="'community-trending'"></app-community-trending>
+  </div>
+</div> 

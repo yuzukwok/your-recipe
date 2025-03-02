@@ -1,0 +1,63 @@
+/* 可选样式，实际上大部分样式已通过tailwind类实现 */
+:host {
+  display: block;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// 图片上传区域样式
+.border-dashed {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+    border-color: #4ade80;
+  }
+}
+
+// 图片预览悬停效果
+img {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.01);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+}
+
+// 删除按钮悬停效果
+button svg {
+  transition: all 0.2s ease;
+}
+
+// 表单验证错误样式
+.ng-invalid.ng-touched {
+  &:not(form) {
+    border-color: #ef4444;
+  }
+}
+
+// 步骤卡片悬停效果
+[formGroupName] {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+} 

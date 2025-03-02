@@ -1,0 +1,8 @@
+/* 菜谱编辑组件样式 */
+.ng-invalid.ng-touched {
+  border-color: #e53e3e;
+}
+
+.ng-invalid.ng-touched:focus {
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.3);
+} 

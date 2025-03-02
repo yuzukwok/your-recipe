@@ -1,0 +1,54 @@
+// 步骤导航点的动画
+div[class*="rounded-full"] {
+  transition: all 0.2s ease-in-out;
+}
+
+// 返回按钮动画
+button {
+  transition: all 0.2s ease;
+  
+  &:hover:not([disabled]) {
+    transform: translateY(-1px);
+  }
+  
+  &:active:not([disabled]) {
+    transform: translateY(0);
+  }
+}
+
+// 标签动画
+.bg-green-100 {
+  transition: background-color 0.3s ease;
+  
+  &:hover {
+    background-color: #dcfce7;
+  }
+}
+
+// 步骤图片动画
+img {
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+// 自定义滚动条
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+} 
